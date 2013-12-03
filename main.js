@@ -15,7 +15,7 @@ watcher.on('update', function (ranges) {
     }
 });
 
-setSpinnerLabel('Laster resultater...');
+setSpinnerLabel('Laster skiver...');
 watcher.start();
 
 updateSize();
