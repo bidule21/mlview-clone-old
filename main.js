@@ -4,7 +4,7 @@ var SourceWatcher = require('./SourceWatcher');
 var rangeView = new LiveShot.MegalinkRangeView();
 document.body.appendChild(rangeView.el);
 
-var watcher = new SourceWatcher('./test');
+var watcher = new SourceWatcher();
 watcher.on('update', function (ranges) {
     if (ranges.length > 0) {
         rangeView.setRange(ranges[0], true);
