@@ -45,12 +45,13 @@ Watcher.prototype.update = function () {
             self.etag = etag;
             self.publishUpdate(data);
         } else {
-            switch (err.name) {
+            switch (err) {
                 case 'FileNotModifiedError':
                     break;
                 case 'FileNotFoundError':
+                    self.publishError(err, 'Could not find ' + self.filePath);
                 default:
-                    self.emit('error', err);
+                    self.publishError(err);
             }
         }
 
@@ -60,6 +61,15 @@ Watcher.prototype.update = function () {
 
 Watcher.prototype.publishUpdate = function (data) {
     this.emit('update', data);
+};
+
+Watcher.prototype.publishError = function (name, message) {
+    var err = new Error(message || 'Unknown error');
+    err.name = name;
+
+    this.emit('error', err);
+
+    return err;
 };
 
 function loadFile(filePath, etag, callback) {
@@ -73,17 +83,11 @@ function loadFile(filePath, etag, callback) {
     request.onreadystatechange = function() {
         if (request.readyState == 4) {
             if (request.status == 304) {
-                var err = new Error(filePath + ' was not modified');
-                err.name = 'FileNotModifiedError';
-
-                callback(err);
+                callback('FileNotModifiedError');
             } else if (request.status == 200) {
                 callback(null, request.responseText, request.getResponseHeader('etag'));
             } else {
-                var err = new Error(filePath + ' was not found');
-                err.name = 'FileNotFoundError';
-
-                callback(err);
+                callback('FileNotFoundError');
             }
         }
     }
