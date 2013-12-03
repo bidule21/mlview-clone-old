@@ -1,4 +1,3 @@
 node_modules
 stage/main.js
-stage/100M_1.txt
-stage/index.txt
+stage/*.txt
