@@ -2,7 +2,7 @@ var Watcher = require('./Watcher');
 var inherits = require('inherits');
 
 // --- Constants ---
-var INDEX_PATTERN = /([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);;([^;\r]*)/g;
+var INDEX_PATTERN = /([^;\r\n]*);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);;([^;\r]*)/g;
 
 function IndexWatcher(filePath, refresh) {
     this.setProperties(filePath, refresh);
