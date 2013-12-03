@@ -76,9 +76,14 @@
             setSpinnerLabel('Laster...');
             container.appendChild(spinner);
 
+            var spinnerHidden = true;
+
             function showSpinner() {
+                if (!spinnerHidden) return;
+
                 document.body.appendChild(container);
                 spinner.className = 'spinner centered_container visible';
+                spinnerHidden = false;
             }
 
             function setSpinnerLabel(message) {
@@ -88,7 +93,10 @@
             function hideSpinner() {
                 spinner.className = 'spinner centered_container hidden';
                 setTimeout(function () {
+                    if (spinnerHidden) return;
+
                     document.body.removeChild(container);
+                    spinnerHidden = true;
                 }, 500);
             }
         </script>
