@@ -1,0 +1,10 @@
+{
+    "name":"MLView",
+    "version":"0.1.0b-1",
+    "main":"main.js",
+    "dependencies":{
+        "inherits":">=2.0",
+        "liveshot-dom":">=0.1",
+        "liveshot-protocol":">=0.1"
+    }
+}
