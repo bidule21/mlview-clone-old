@@ -2,5 +2,4 @@
 * Add inner tens to liveshot
 * error checking
     * Within LiveShot, shouldn't crash upon faulty data
-* Loading message
 * Something to fill blank screen

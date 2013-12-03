@@ -7,12 +7,15 @@ document.body.appendChild(rangeView.el);
 var watcher = new SourceWatcher();
 watcher.on('update', function (ranges) {
     if (ranges.length > 0) {
+        hideSpinner();
+
         rangeView.setRange(ranges[0], true);
     } else {
         document.body.innerHTML = 'Waiting for data...';
     }
 });
 
+setSpinnerLabel('Laster resultater...');
 watcher.start();
 
 updateSize();
@@ -25,4 +28,3 @@ function updateSize() {
     rangeView.updateSize();
     rangeView.draw();
 }
-
