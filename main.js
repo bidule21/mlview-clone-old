@@ -1,5 +1,5 @@
 var LiveShot = require('liveshot-dom');
-var SourceWatcher = require('../SourceWatcher');
+var SourceWatcher = require('./SourceWatcher');
 
 var rangeView = new LiveShot.MegalinkRangeView();
 document.body.appendChild(rangeView.el);

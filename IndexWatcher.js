@@ -37,10 +37,10 @@ function parseIndex(data) {
         console.dir(cards);
     } catch (err) {
         if (err.name === 'TypeError') {
-            throw {
-                name:'IndexParsingError',
-                essage:'Could not parse index'
-            };
+            var err = new Error('Failed parsing index data');
+            err.name = 'IndexParsingError';
+
+            throw err;
         } else {
             throw err;
         }

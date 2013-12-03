@@ -38,10 +38,10 @@ function parseSeries(data) {
         };
     } catch (err) {
         if (err.name === 'TypeError') {
-            throw {
-                name:'SeriesParsingError',
-                message:'Could not parse series data'
-            };
+            var err = new Error('Failed parsing series data');
+            err.name = 'SeriesParsingError';
+
+            throw err;
         } else {
             throw err;
         }
@@ -61,10 +61,10 @@ function parseSeries(data) {
         }
     } catch (err) {
         if (err.name === 'TypeError') {
-            throw {
-                name:'ShotParsingError',
-                essage:'Could not parse shot data'
-            };
+            var err = new Error('Failed parsing shot data');
+            err.name = 'ShotParsingError';
+
+            throw err;
         } else {
             throw err;
         }

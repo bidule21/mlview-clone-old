@@ -44,6 +44,14 @@ Watcher.prototype.update = function () {
         if (!err) {
             self.etag = etag;
             self.publishUpdate(data);
+        } else {
+            switch (err.name) {
+                case 'FileNotModifiedError':
+                    break;
+                case 'FileNotFoundError':
+                default:
+                    self.emit('error', err);
+            }
         }
 
         self.updating = false;
@@ -65,9 +73,17 @@ function loadFile(filePath, etag, callback) {
     request.onreadystatechange = function() {
         if (request.readyState == 4) {
             if (request.status == 304) {
-                callback('not modified');
+                var err = new Error(filePath + ' was not modified');
+                err.name = 'FileNotModifiedError';
+
+                callback(err);
             } else if (request.status == 200) {
                 callback(null, request.responseText, request.getResponseHeader('etag'));
+            } else {
+                var err = new Error(filePath + ' was not found');
+                err.name = 'FileNotFoundError';
+
+                callback(err);
             }
         }
     }
