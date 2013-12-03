@@ -52,7 +52,5 @@ function parseIndex(data) {
         });
     }
 
-    console.dir(cards);
-
     return cards;
 }
