@@ -3,3 +3,6 @@
 * error checking
     * Within LiveShot, shouldn't crash upon faulty data
 * Something to fill blank screen
+* Hover over lane enlarges it
+* Click lane to show it fullscreen
+    * Has scroller below to select a few targets
