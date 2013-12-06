@@ -1,6 +1,13 @@
 var LiveShot = require('liveshot-dom');
 var SourceWatcher = require('./SourceWatcher');
 
+// setup scale
+if (window.devicePixelRatio) {
+    var meta = document.head.getElementsByTagName('meta')[0];
+    meta.content = 'width=device-width, user-scalable=no, initial-scale=' + (1/window.devicePixelRatio);
+}
+
+// setup views
 var rangeView = new LiveShot.MegalinkRangeView();
 document.body.appendChild(rangeView.el);
 
