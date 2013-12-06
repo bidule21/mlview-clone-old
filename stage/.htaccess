@@ -1,3 +1,5 @@
 ExpiresActive on
 ExpiresDefault "now"
 AddCharset iso-8859-1 .txt
+
+header add "disablevcache" "true"
