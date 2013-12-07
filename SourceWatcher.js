@@ -12,23 +12,23 @@ var CARD_REFRESH = 1000;
 var TARGET_MAP = {
     '30':{
         id:'NO_DFS_15M',
-        scale:40000,
-        gaugeSize:5560/40000
+        scale:41500,
+        gaugeSize:4000/41500
     },
     '31':{
         id:'NO_DFS_100M',
         scale:300000,
-        gaugeSize:8000/300000
+        gaugeSize:4000/300000
     },
     '32':{
         id:'NO_DFS_200M',
         scale:500000,
-        gaugeSize:8000/500000
+        gaugeSize:4000/500000
     },
     '33':{
         id:'NO_DFS_300M',
         scale:750000,
-        gaugeSize:8000/750000
+        gaugeSize:4000/750000
     },
     'XXX':{
         id:'UNKNOWN',
