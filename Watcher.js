@@ -84,7 +84,7 @@ function loadFile(filePath, etag, callback) {
         if (request.readyState == 4) {
             if (request.status == 304) {
                 callback('FileNotModifiedError');
-            } else if (request.status == 200) {
+            } else if (request.status == 200 || (request.status == 0 && request.response)) {
                 callback(null, request.responseText, request.getResponseHeader('etag'));
             } else {
                 callback('FileNotFoundError');
