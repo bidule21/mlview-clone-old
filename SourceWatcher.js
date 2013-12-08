@@ -9,6 +9,8 @@ var RangeBuilder = LiveShot.RangeBuilder;
 // --- CONSTANTS ---
 var INDEX_REFRESH = 1000;
 var CARD_REFRESH = 1000;
+var INDEX_PATH = 'index.txt';
+var CARD_EXT = '.txt';
 var TARGET_MAP = {
     '30':{
         id:'NO_DFS_15M',
@@ -175,7 +177,7 @@ SourceWatcher.prototype.publishUpdate = function () {
 };
 
 SourceWatcher.prototype.getIndexPath = function () {
-    return this.root + '/index.txt';
+    return this.root + '/' + INDEX_PATH;
 };
 
 SourceWatcher.prototype.getCardPath = function (range, lane) {
