@@ -14,9 +14,8 @@ document.body.appendChild(rangeView.el);
 var watcher = new SourceWatcher();
 watcher.on('update', function (ranges) {
     if (ranges.length > 0) {
-        hideSpinner();
-
         rangeView.setRange(ranges[0], true);
+        hideSpinner();
     } else {
         document.body.innerHTML = 'Waiting for data...';
     }
