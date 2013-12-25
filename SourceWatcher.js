@@ -143,6 +143,7 @@ SourceWatcher.prototype.updateCard = function (range, lane, seriesData, silent) 
 
     card.builder
         .setSeriesName(seriesData.series)
+        .setMarking(seriesData.marking)
         .setSeriesSum(seriesData.seriesSum)
         .setTotalSum(seriesData.totalSum)
         .resetShots();

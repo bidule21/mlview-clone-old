@@ -5,6 +5,7 @@ var inherits = require('inherits');
 var SHOT_PATTERN = /\[(\d+)\]\r\nX=(.+)\r\nY=(.+)\r\nV=(.+)/mg;
 var SERIES_NUM_PATTERN = /Nr=(\d+)/;
 var SERIES_NAME_PATTERN = /Name=[\s]*(.*)/;
+var MARKING_PATTERN = /Marking=(.*)/;
 var START_SUM_PATTERN = /Start=(.*)/;
 var SERIES_SUM_PATTERN = /Series=(.*)/;
 var TOTAL_SUM_PATTERN = /Total=(.*)/;
@@ -41,6 +42,7 @@ function parseSeries(data) {
     var result = {
         seriesNum:parseInt(data.match(SERIES_NUM_PATTERN)[1]),
         series:data.match(SERIES_NAME_PATTERN)[1],
+        marking:data.match(MARKING_PATTERN)[1] == 'True',
         startSum:data.match(START_SUM_PATTERN)[1],
         seriesSum:data.match(SERIES_SUM_PATTERN)[1],
         totalSum:data.match(TOTAL_SUM_PATTERN)[1],
