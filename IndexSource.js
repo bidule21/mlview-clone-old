@@ -1,22 +1,22 @@
-var Watcher = require('./Watcher');
+var DataSource = require('./DataSource');
 var inherits = require('inherits');
 
 // --- Constants ---
 var INDEX_PATTERN = /([^;\r\n]*);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);;([^;\r]*)/g;
 
-function IndexWatcher(filePath, refresh) {
+function IndexSource(filePath, refresh) {
     this.setProperties(filePath, refresh);
 }
 
-module.exports = IndexWatcher;
-inherits(IndexWatcher, Watcher);
+module.exports = IndexSource;
+inherits(IndexSource, DataSource);
 
-IndexWatcher.prototype.setup = function () {
+IndexSource.prototype.setup = function () {
 };
 
-IndexWatcher.prototype.publishUpdate = function (data) {
+IndexSource.prototype.publishData = function (data) {
     try {
-        this.emit('update', parseIndex(data));
+        this.emit('data', parseIndex(data));
     } catch (err) {
         if (err.name === 'TypeError') {
             this.publishError('IndexParsingError', 'Failed parsing index data');
@@ -26,12 +26,12 @@ IndexWatcher.prototype.publishUpdate = function (data) {
     }
 };
 
-IndexWatcher.prototype.publishError = function (name, message) {
+IndexSource.prototype.publishError = function (name, message) {
     if (name === 'FileNotFoundError') {
         message = 'Could not find index file at ' + this.filePath;
     }
 
-    Watcher.prototype.publishError.apply(this, [name, message]);
+    DataSource.prototype.publishError.apply(this, [name, message]);
 };
 
 function parseIndex(data) {

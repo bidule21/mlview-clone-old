@@ -1,5 +1,5 @@
 var LiveShot = require('liveshot-dom');
-var SourceWatcher = require('./SourceWatcher');
+var MegalinkWatcher = require('./MegalinkWatcher');
 
 // setup scale
 if (window.devicePixelRatio) {
@@ -11,7 +11,7 @@ if (window.devicePixelRatio) {
 var rangeView = new LiveShot.MegalinkRangeView();
 document.body.appendChild(rangeView.el);
 
-var watcher = new SourceWatcher();
+var watcher = new MegalinkWatcher();
 watcher.on('update', function (ranges) {
     if (ranges.length > 0) {
         rangeView.setRange(ranges[0], true);
@@ -21,7 +21,7 @@ watcher.on('update', function (ranges) {
     }
 });
 
-setSpinnerLabel('Laster skiver...');
+setSpinnerLabel('Laster skiver');
 watcher.start();
 
 updateSize();

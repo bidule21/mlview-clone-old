@@ -1,4 +1,4 @@
-var EventEmitter = require('events').EventEmitter;
+var DataSource = require('./DataSource');
 var inherits = require('inherits');
 
 var REFRESH = 1000;
@@ -8,7 +8,7 @@ function Watcher(filePath, refresh) {
 }
 
 module.exports = Watcher;
-inherits(Watcher, EventEmitter);
+inherits(Watcher, DataSource);
 
 // --- External API ---
 Watcher.prototype.start = function () {
@@ -26,75 +26,7 @@ Watcher.prototype.stop = function () {
 
 // --- Internal API ---
 Watcher.prototype.setProperties = function (filePath, refresh) {
-    this.filePath = filePath;
+    DataSource.prototype.setProperties.apply(this, [filePath]);
+
     this.refresh = refresh || REFRESH;
 };
-
-Watcher.prototype.stageUpdate = function () {
-    if (this.updating) return;
-
-    this.update();
-};
-
-Watcher.prototype.update = function () {
-    this.updating = true;
-
-    var self = this;
-    loadFile(this.filePath, this.etag, function (err, data, etag) {
-        if (!err) {
-            self.etag = etag;
-            self.publishUpdate(data);
-        } else {
-            switch (err) {
-                case 'FileNotModifiedError':
-                    break;
-                case 'FileNotFoundError':
-                    self.publishError(err, 'Could not find ' + self.filePath);
-                default:
-                    self.publishError(err);
-            }
-        }
-
-        self.updating = false;
-    });
-};
-
-Watcher.prototype.publishUpdate = function (data) {
-    this.emit('update', data);
-};
-
-Watcher.prototype.publishError = function (name, message) {
-    var err = new Error(message || 'Unknown error');
-    err.name = name;
-
-    this.emit('error', err);
-
-    return err;
-};
-
-function loadFile(filePath, etag, callback) {
-    if (!callback) {
-        callback = etag;
-        etag = undefined;
-    }
-
-    var request = new XMLHttpRequest();
-
-    request.onreadystatechange = function() {
-        if (request.readyState == 4) {
-            if (request.status == 304) {
-                callback('FileNotModifiedError');
-            } else if (request.status == 200 || (request.status == 0 && request.response)) {
-                callback(null, request.responseText, request.getResponseHeader('etag'));
-            } else {
-                callback('FileNotFoundError');
-            }
-        }
-    }
-
-    request.open('GET', filePath + '?' + new Date().valueOf(), true);
-    if (etag) {
-        request.setRequestHeader('If-None-Match', etag);
-    }
-    request.send();
-}
