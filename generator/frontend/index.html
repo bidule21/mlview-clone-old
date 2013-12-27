@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
+    <head>
+        <style>
+            html, body
+            {
+                height: 100%;
+                padding: 0px;
+                margin: 0px;
+                overflow: hidden;
+            }
+
+            .container
+            {
+                height: 100%;
+                width: 100%;
+                text-align: center;
+                z-index: 1;
+                position: absolute;
+            }
+
+            .container:before
+            {
+                content: '';
+                display: inline-block;
+                height: 100%;
+                vertical-align: middle;
+                margin-right: -0.25em;
+            }
+
+            .centered_container
+            {
+                display: inline-block;
+                vertical-align: middle;
+            }
+
+
+            div.spinner {
+                background-color: rgb(30, 30, 30);
+                color: white;
+                font-size: 36px;
+                vertical-align: middle;
+                text-align: center;
+                border-radius: 10px;
+
+                line-height: 200px;
+                width: 400px;
+
+                -webkit-transition: opacity .15s ease-in-out;
+                -moz-transition: opacity .15s ease-in-out;
+                -ms-transition: opacity .15s ease-in-out;
+                -o-transition: opacity .15s ease-in-out;
+                transition: opacity .15s ease-in-out;
+            }
+
+            div.spinner.hidden {
+                opacity: 0;
+            }
+
+            div.spinner.visible {
+                opacity: 1;
+            }
+        </style>
+        <!--[if IE]><script src="excanvas.js"></script><![endif]-->
+        <script>
+            function init() {
+                showSpinner();
+                var handle = document.createElement('script');
+
+                handle.type = 'text/javascript';
+                handle.src = 'main.js';
+
+                document.body.appendChild(handle);
+            }
+
+            var container = document.createElement('div');
+            container.className = 'container';
+
+            var spinner = document.createElement('div');
+            spinner.className = 'spinner centered_container';
+            setSpinnerLabel('Laster MLVis');
+            container.appendChild(spinner);
+
+            var spinnerHidden = true;
+
+            function showSpinner() {
+                if (!spinnerHidden) return;
+
+                document.body.appendChild(container);
+                spinner.className = 'spinner centered_container visible';
+                spinnerHidden = false;
+            }
+
+            function setSpinnerLabel(message) {
+                spinner.innerHTML = message;
+            }
+
+            function hideSpinner() {
+                spinner.className = 'spinner centered_container hidden';
+                setTimeout(function () {
+                    if (spinnerHidden) return;
+
+                    document.body.removeChild(container);
+                    spinnerHidden = true;
+                }, 500);
+            }
+        </script>
+    </head>
+    <body onload="init()">
+    </body>
+</html>
