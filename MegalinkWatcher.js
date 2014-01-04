@@ -15,27 +15,27 @@ var CARD_EXT = '.txt';
 var TARGET_MAP = {
     '30':{
         id:'NO_DFS_15M',
-        scale:41500,
+        scale:41.5,
         gaugeSize:4000/41500
     },
     '31':{
         id:'NO_DFS_100M',
-        scale:300000,
+        scale:300,
         gaugeSize:4000/300000
     },
     '32':{
         id:'NO_DFS_200M',
-        scale:500000,
+        scale:500,
         gaugeSize:4000/500000
     },
     '33':{
         id:'NO_DFS_300M',
-        scale:750000,
+        scale:750,
         gaugeSize:4000/750000
     },
     'XXX':{
         id:'UNKNOWN',
-        scale:1000000,
+        scale:1000,
         gaugeSize:10000/1000000
     }
 };
@@ -144,7 +144,6 @@ MegalinkWatcher.prototype.updateIndex = function (data) {
         // XXX if there is mismatch between index and version, this will fail
         var range = this.ranges[cardData.range];
         var card = range.cards[cardData.lane];
-        var target = TARGET_MAP[cardData.targetID]; // XXX targetID might be unknown
 
         range.builder.setRelay(cardData.relay);
 
@@ -153,9 +152,7 @@ MegalinkWatcher.prototype.updateIndex = function (data) {
             .setName(cardData.name)
             .setClub(cardData.club)
             .setClassName(cardData.className)
-            .setCategory(cardData.category)
-            .setGaugeSize(target.gaugeSize)
-            .setTargetID(target.id);
+            .setCategory(cardData.category);
     }
 
     this.publishUpdate();
@@ -169,17 +166,21 @@ MegalinkWatcher.prototype.stageUpdate = function () {
 
 MegalinkWatcher.prototype.updateCard = function (range, lane, data) {
     var card = this.ranges[range].cards[lane];
+    var target = TARGET_MAP[data.targetID]; // XXX targetID might be unknown
 
     card.builder
         .setSeriesName(data.series)
         .setMarking(data.marking)
         .setSeriesSum(data.seriesSum)
         .setTotalSum(data.totalSum)
+        .setGaugeSize(target.gaugeSize)
+        .setTargetID(target.id)
         .resetShots();
 
     for (var idx in data.shots) {
         var shot = data.shots[idx];
-        card.builder.addShotData(shot.x, shot.y, shot.value);
+
+        card.builder.addShotData(shot.x/target.scale, shot.y/target.scale, shot.value);
     }
 
     this.publishUpdate();

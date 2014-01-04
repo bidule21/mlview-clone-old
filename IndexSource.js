@@ -2,7 +2,7 @@ var DataSource = require('./DataSource');
 var inherits = require('inherits');
 
 // --- Constants ---
-var INDEX_PATTERN = /([^;\r\n]*);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);;([^;\r]*)/g;
+var INDEX_PATTERN = /([^;\r\n]*);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);/g;
 
 function IndexSource(filePath, refresh) {
     this.setProperties(filePath, refresh);
@@ -49,8 +49,7 @@ function parseIndex(data) {
             club:indexMatch[5],
             className:indexMatch[6],
             category:indexMatch[7],
-            startsum:indexMatch[8],
-            targetID:indexMatch[9]
+            startsum:indexMatch[8]
         });
     }
 

@@ -169,11 +169,11 @@ function iterateCard(file, lane, callback) {
     } else {
         ++numShots[file];
 
-        var r = 0.3* Math.pow(Math.random(), 4);
+        var r = 0.3 * Math.pow(Math.random(), 2);
         var t = Math.random() * 2*Math.PI;
 
-        var x = r*Math.cos(t);
-        var y = r*Math.sin(t);
+        var x = 47.4*r*Math.cos(t);
+        var y = 47.4*r*Math.sin(t);
         var v = Math.floor(100*(1 - (r - 4000/41500)))/10;
 
         if (marking[seriesNum[file]]) {
@@ -204,6 +204,7 @@ function iterateCard(file, lane, callback) {
 
     data += 'Nr=' + lane + '\r\n';
     data += 'Name=' + series[seriesNum[file]] + '\r\n';
+    data += 'TargetID=30\r\n';
     data += 'Marking=' + (marking[seriesNum[file]] ? 'True' : 'False') + '\r\n';
     data += 'Series=' + seriesSum[file] + '\r\n';
     data += 'SeriesCenterTens=' + seriesCenterTens[file] + '\r\n';
