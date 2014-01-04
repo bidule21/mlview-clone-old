@@ -47,12 +47,15 @@ DataSource.prototype.publishData = function (data) {
     this.emit('data', data);
 };
 
-DataSource.prototype.publishError = function (name, message) {
-    var err = new Error(message || 'Unknown error');
+DataSource.prototype.publishError = function (name, message, originalError) {
+    var err = new Error();
+
     err.name = name;
+    err.message = message;
+    err.filePath = this.filePath;
+    err.originalError = originalError;
 
     this.emit('error', err);
-
     return err;
 };
 

@@ -21,20 +21,22 @@ SeriesSource.prototype.publishData = function (data) {
     try {
         this.emit('data', parseSeries(data));
     } catch (err) {
+        err.response = data;
+
         if (err.name === 'TypeError') {
-            this.publishError('SeriesParsingError', 'Failed parsing series data');
+            this.publishError('SeriesParsingError', 'Failed parsing series data', err);
         } else {
             this.publishError(err);
         }
     }
 };
 
-SeriesSource.prototype.publishError = function (name, message) {
+SeriesSource.prototype.publishError = function (name, message, error) {
     if (name === 'FileNotFoundError') {
         message = 'Could not find series data file at ' + this.filePath;
     }
 
-    DataSource.prototype.publishError.apply(this, [name, message]);
+    DataSource.prototype.publishError.apply(this, [name, message, error]);
 };
 
 function parseSeries(data) {

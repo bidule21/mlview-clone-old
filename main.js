@@ -21,6 +21,10 @@ watcher.on('update', function (ranges) {
     }
 });
 
+watcher.on('error', function (err) {
+    console.error(err);
+});
+
 setSpinnerLabel('Laster skiver');
 watcher.start();
 

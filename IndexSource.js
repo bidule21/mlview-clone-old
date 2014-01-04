@@ -18,20 +18,22 @@ IndexSource.prototype.publishData = function (data) {
     try {
         this.emit('data', parseIndex(data));
     } catch (err) {
+        err.response = data;
+
         if (err.name === 'TypeError') {
-            this.publishError('IndexParsingError', 'Failed parsing index data');
+            this.publishError('IndexParsingError', 'Failed parsing index data', err);
         } else {
             this.publishError(err);
         }
     }
 };
 
-IndexSource.prototype.publishError = function (name, message) {
+IndexSource.prototype.publishError = function (name, message, error) {
     if (name === 'FileNotFoundError') {
         message = 'Could not find index file at ' + this.filePath;
     }
 
-    DataSource.prototype.publishError.apply(this, [name, message]);
+    DataSource.prototype.publishError.apply(this, [name, message, error]);
 };
 
 function parseIndex(data) {

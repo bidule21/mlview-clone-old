@@ -73,6 +73,10 @@ MegalinkWatcher.prototype.setup = function () {
             self.sources[file].stageUpdate();
         });
     });
+
+    this.watcher.on('error', function (err) {
+        self.emit('error', err);
+    });
 };
 
 MegalinkWatcher.prototype.setupCards = function (data) {
@@ -106,6 +110,10 @@ MegalinkWatcher.prototype.setupSources = function () {
         self.updateIndex(data);
     });
 
+    this.sources[INDEX_PATH].on('error', function (err) {
+        self.emit('error', err);
+    });
+
     for (var range in this.ranges) {
         for (var lane in this.ranges[range].cards) {
             var file = this.getCardFile(range, lane);
@@ -120,6 +128,10 @@ MegalinkWatcher.prototype.setupCardSource = function (range, lane) {
     var self = this;
     source.on('data', function (seriesData) {
         self.updateCard(range, lane, seriesData);
+    });
+
+    source.on('error', function (err) {
+        self.emit('error', err);
     });
 
     return source;

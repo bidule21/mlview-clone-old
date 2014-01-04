@@ -23,20 +23,22 @@ VersionWatcher.prototype.publishData = function (data) {
     try {
         this.updateVersion(parseVersion(data));
     } catch (err) {
+        err.response = data;
+
         if (err.name === 'TypeError') {
-            this.publishError('VersionParsingError', 'Failed parsing version data');
+            this.publishError('VersionParsingError', 'Failed parsing version data', err);
         } else {
             this.publishError(err);
         }
     }
 };
 
-VersionWatcher.prototype.publishError = function (name, message) {
+VersionWatcher.prototype.publishError = function (name, message, error) {
     if (name === 'FileNotFoundError') {
         message = 'Could not find version file at ' + this.filePath;
     }
 
-    Watcher.prototype.publishError.apply(this, [name, message]);
+    Watcher.prototype.publishError.apply(this, [name, message, error]);
 };
 
 VersionWatcher.prototype.updateVersion = function (versions) {
