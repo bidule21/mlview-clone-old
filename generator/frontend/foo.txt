@@ -1,7 +1,0 @@
-[Series]
-Nr=2
-Name= Kne
-Start=0
-Series=48
-Total=48
-Count=5

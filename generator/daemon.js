@@ -1,19 +1,35 @@
-var express = require('express');
-var http = require('http');
-var path = require('path');
-var fs = require('fs');
+var iconv = require('iconv-lite');
+var ftp = require('jsftp');
+var async = require('async');
 
-// --- Configuration ---
-var PORT = 8080;
+// --- Setup FTP ---
+var client = new ftp({
+    host:'ftp.ryggeskytterlag.no',
+    port:21
+});
 
-// --- Setup express ---
-var app = express();
+async.series([
+    function (callback) {
+        client.auth('ryggeskytterlag.no', 'asd966', callback);
+    },
+    function (callback) {
+        client.raw.cwd('live_beta', callback);
+    },
+    function (callback) {
+        iterate();
+        callback(null);
+    }
+], function (err, res) {
+    if (err) {
+        console.error(err);
+    } else {
+        console.dir(res);
+    }
+});
 
-var frontendPath = path.join(__dirname, 'frontend');
-app.use(express.static(frontendPath));
-
-var server = http.createServer(app);
-server.listen(PORT);
+client.on('error', function (error) {
+    console.error(error);
+});
 
 // --- Generate cards ---
 var series = ['Prøve', 'Ligg', 'Stå', 'Kne', 'Grunnlag',  'Omgang'];
@@ -125,7 +141,22 @@ var seriesNum = {
     '100M_10.txt':0
 };
 
-function iterateCard(file, lane) {
+var lanes = [];
+
+function iterate() {
+    var lane = pickLane();
+    var file = '100M_' + lane + '.txt';
+
+    iterateCard(file, lane, function (error) {
+        if (error) {
+            console.error(error);
+        }
+
+        iterate();
+    });
+}
+
+function iterateCard(file, lane, callback) {
     if (numShots[file] == maxShots[seriesNum[file]]) {
         numShots[file] = 0;
         seriesNum[file] = (seriesNum[file] + 1) % marking.length;
@@ -181,24 +212,33 @@ function iterateCard(file, lane) {
     data += 'Count=' + numShots[file] + '\r\n';
     data += shots[file];
 
-    fs.writeFileSync(path.join(__dirname, 'frontend', file), data);
-    console.log('iterate ' + file);
+    var cb = function (error) {
+        if (error) {
+            console.error('error iterating ' + file);
+            console.error(error);
+            console.error('retrying...');
 
-    ++versions[file];
-    writeVersion();
+            writeFile(file, data, cb);
+        } else {
+            console.log('iterate ' + file);
+
+            ++versions[file];
+            writeVersion(callback);
+        }
+    };
+
+    writeFile(file, data, cb);
 }
 
-function writeVersion() {
+function writeVersion(callback) {
     var data = '';
 
     for (var file in versions) {
         data += file + ';' + versions[file] + '\r\n';
     }
 
-    fs.writeFileSync(path.join(__dirname, 'frontend', 'version.txt'), data);
+    writeFile('version.txt', data, callback);
 }
-
-var lanes = [];
 
 function fillLanes() {
     for (var i = 1; i <= 10; ++i) {
@@ -216,9 +256,7 @@ function pickLane() {
     return lanes.splice(idx, 1);
 }
 
-setInterval(function () {
-    var lane = pickLane();
-    var file = '100M_' + lane + '.txt';
-
-    iterateCard(file, lane);
-}, 500);
+// --- Utilities ---
+function writeFile(path, data, callback) {
+    client.put(iconv.encode(data, 'iso-8859-1'), path, callback);
+}
