@@ -6,3 +6,14 @@
 * Hover over lane enlarges it
 * Click lane to show it fullscreen
     * Has scroller below to select a few targets
+* Add target rendering caching
+
+* Move targetID to series, this means that coordinate conversion can be done in
+  Series parser
+  Makes sense, since series data might be unvalidated by changed targetID
+
+* Use mm instead of normalized coordinates
+    * Disadvantages:
+        * need to have marker size, at least needs indicator whether to use
+            marker around gauge
+        * scaling is more complicated
