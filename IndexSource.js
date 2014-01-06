@@ -2,6 +2,7 @@ var DataSource = require('./DataSource');
 var inherits = require('inherits');
 
 // --- Constants ---
+var HOST_PATTERN = /Host=([^\r\n]*)/;
 var INDEX_PATTERN = /([^;\r\n]*);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);/g;
 
 function IndexSource(filePath, refresh) {
@@ -37,11 +38,15 @@ IndexSource.prototype.publishError = function (name, message, error) {
 };
 
 function parseIndex(data) {
+    var result = {
+        host:data.match(HOST_PATTERN)[1],
+        cards:[]
+    };
+
     INDEX_PATTERN.lastIndex = 0;
-    var cards = [];
 
     for (var indexMatch; indexMatch = INDEX_PATTERN.exec(data);) {
-        cards.push({
+        result.cards.push({
             range:indexMatch[1],
             relay:indexMatch[2],
             lane:indexMatch[3],
@@ -53,5 +58,5 @@ function parseIndex(data) {
         });
     }
 
-    return cards;
+    return result;
 }

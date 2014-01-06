@@ -138,14 +138,15 @@ MegalinkWatcher.prototype.setupCardSource = function (range, lane) {
 };
 
 MegalinkWatcher.prototype.updateIndex = function (data) {
-    for (var idx in data) {
-        var cardData = data[idx];
+    for (var idx in data.cards) {
+        var cardData = data.cards[idx];
 
         // XXX if there is mismatch between index and version, this will fail
         var range = this.ranges[cardData.range];
         var card = range.cards[cardData.lane];
 
         range.builder.setRelay(cardData.relay);
+        range.builder.setHost(data.host);
 
         card.builder
             .setLane(cardData.lane)
