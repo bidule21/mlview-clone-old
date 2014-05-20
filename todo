@@ -1,19 +1,30 @@
-* handle stray bootstrap update events
-* Add inner tens to liveshot
-* error checking
-    * Within LiveShot, shouldn't crash upon faulty data
-* Something to fill blank screen
-* Hover over lane enlarges it
-* Click lane to show it fullscreen
-    * Has scroller below to select a few targets
-* Add target rendering caching
+------ Visual stuff ------
+* Add some way to select range (this is important)
+* Add better (visual) error reporting
+* Add inner tens
+* Add some way to select single lanes
+* Add something to fill blank screen
+
+------- Data format stuff -------
+* Need UTF8 in order to work well locally
+    * Check if this is OK implementation-wise
+    * Report to Øyvind
 
 * Move targetID to series, this means that coordinate conversion can be done in
   Series parser
   Makes sense, since series data might be unvalidated by changed targetID
+  This is implemented, but not reported to Øyvind
 
-* Use mm instead of normalized coordinates
-    * Disadvantages:
-        * need to have marker size, at least needs indicator whether to use
-            marker around gauge
-        * scaling is more complicated
+------ Stuff that would be nice to have ------
+* handle stray bootstrap update events
+* error checking
+    * within LiveShot, shouldn't crash upon faulty data
+
+* Experiment with older versions of IE, they are slow, and not always rendering
+  the text
+* Don't need to redraw the entire card every time?
+
+* Add target rendering caching
+    * Can be done using getImageData, but this doesn't work with EXCanvas
+
+* Sometimes it says 'Loading components' or something
