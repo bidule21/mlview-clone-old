@@ -34,7 +34,9 @@ client.on('error', function (error) {
 // --- Generate cards ---
 var series = ['Prøve', 'Ligg', 'Stå', 'Kne', 'Grunnlag',  'Omgang'];
 var marking = [false, true, true, true, true, true];
-var maxShots = [10, 5, 5, 5, 10, 10];
+var maxShots = [12, 5, 5, 5, 10, 10];
+
+var seriesNum = -1;
 
 var versions = {
     'index.txt':0,
@@ -128,84 +130,119 @@ var numShots = {
     '100M_10.txt':0
 };
 
-var seriesNum = {
-    '100M_1.txt':0,
-    '100M_2.txt':0,
-    '100M_3.txt':0,
-    '100M_4.txt':0,
-    '100M_5.txt':0,
-    '100M_6.txt':0,
-    '100M_7.txt':0,
-    '100M_8.txt':0,
-    '100M_9.txt':0,
-    '100M_10.txt':0
-};
-
 var lanes = [];
 
 function iterate() {
-    var lane = pickLane();
-    var file = '100M_' + lane + '.txt';
-
-    iterateCard(file, lane, function (error) {
+    var cb = function (error) {
         if (error) {
             console.error(error);
         }
 
-        iterate();
-    });
+        setTimeout(iterate, 1000);
+    };
+
+
+    if (lanes.length == 0) {
+        nextSeries(function (err) {
+            fillLanes();
+            setTimeout(function () {cb(err)}, 4000);
+        });
+    } else {
+        var lane = pickLane();
+        var file = '100M_' + lane + '.txt';
+
+        addShot(file, cb);
+    }
 }
 
-function iterateCard(file, lane, callback) {
-    if (numShots[file] == maxShots[seriesNum[file]]) {
+function nextSeries(callback) {
+    console.log('Changing series');
+
+    seriesNum = (seriesNum + 1) % marking.length;
+    var calls = [];
+
+    for (var file in seriesSum) {
         numShots[file] = 0;
-        seriesNum[file] = (seriesNum[file] + 1) % marking.length;
         seriesSum[file] = 0;
         shots[file] = '';
 
-        if (seriesNum[file] == 0) {
+        if (seriesNum == 0) {
             totalSum[file] = 0;
         }
-    } else {
-        ++numShots[file];
 
-        var r = 0.3 * Math.pow(Math.random(), 2);
-        var t = Math.random() * 2*Math.PI;
+        ++versions[file];
 
-        var x = 47.4*r*Math.cos(t);
-        var y = 47.4*r*Math.sin(t);
-        var v = Math.floor(100*(1 - (r - 4000/41500)))/10;
-
-        if (marking[seriesNum[file]]) {
-            seriesSum[file] += Math.floor(v);
-            totalSum[file] += Math.floor(v);
-        }
-
-        if (v >= 10.5) {
-            v = '*.' + Math.round((v - 10)*10);
-
-            if (marking[seriesNum[file]]) {
-                ++seriesCenterTens[file];
-                ++totalCenterTens[file];
-            }
-        } else if (v >= 10) {
-            v = 'X.' + Math.round((v - 10)*10);
-        } else if (v == Math.round(v)) {
-            v = v + '.0';
-        }
-
-        shots[file] += '[' + numShots[file] + ']\r\n';
-        shots[file] += 'X=' + x + '\r\n';
-        shots[file] += 'Y=' + y + '\r\n';
-        shots[file] += 'V=' + v + '\r\n';
+        (function (file) {
+            calls.push(function (cb) {
+                pushCard(file, cb);
+            });
+        })(file);
     }
 
+    calls.push(function (cb) {
+        pushVersion(cb);
+    });
+
+    async.series(calls, function (err, res) {
+        callback(err);
+    });
+}
+
+function addShot(file, callback) {
+    console.log('Adding shot to ' + file);
+    ++numShots[file];
+
+    var r = 0.3 * Math.pow(Math.random(), 2);
+    var t = Math.random() * 2*Math.PI;
+
+    var x = 47.4*r*Math.cos(t);
+    var y = 47.4*r*Math.sin(t);
+    var v = Math.floor(100*(1 - (r - 4000/41500)))/10;
+
+    if (marking[seriesNum]) {
+        seriesSum[file] += Math.floor(v);
+        totalSum[file] += Math.floor(v);
+    }
+
+    if (v >= 10.5) {
+        v = '*.' + Math.round((v - 10)*10);
+
+        if (marking[seriesNum]) {
+            ++seriesCenterTens[file];
+            ++totalCenterTens[file];
+        }
+    } else if (v >= 10) {
+        v = 'X.' + Math.round((v - 10)*10);
+    } else if (v == Math.round(v)) {
+        v = v + '.0';
+    }
+
+    shots[file] += '[' + numShots[file] + ']\r\n';
+    shots[file] += 'X=' + x + '\r\n';
+    shots[file] += 'Y=' + y + '\r\n';
+    shots[file] += 'V=' + v + '\r\n';
+
+    ++versions[file];
+
+    async.series([
+        function (cb) {
+            pushCard(file, cb);
+        },
+        function (cb) {
+            pushVersion(cb);
+        }], function (err, res) {
+            callback(err);
+        });
+}
+
+function pushCard(file, callback) {
+    var lane = file.match(/100M_(\d*).txt/)[1];
     var data = '';
 
     data += 'Nr=' + lane + '\r\n';
-    data += 'Name=' + series[seriesNum[file]] + '\r\n';
+    data += 'Name=' + series[seriesNum] + '\r\n';
     data += 'TargetID=30\r\n';
-    data += 'Marking=' + (marking[seriesNum[file]] ? 'True' : 'False') + '\r\n';
+    data += 'Marking=' + (marking[seriesNum] ? 'True' : 'False') + '\r\n';
     data += 'Series=' + seriesSum[file] + '\r\n';
     data += 'SeriesCenterTens=' + seriesCenterTens[file] + '\r\n';
     data += 'Total=' + totalSum[file] + '\r\n';
@@ -221,17 +258,14 @@ function iterateCard(file, lane, callback) {
 
             writeFile(file, data, cb);
         } else {
-            console.log('iterate ' + file);
-
-            ++versions[file];
-            writeVersion(callback);
+            callback();
         }
     };
 
     writeFile(file, data, cb);
 }
 
-function writeVersion(callback) {
+function pushVersion(callback) {
     var data = '';
 
     for (var file in versions) {
@@ -242,8 +276,10 @@ function writeVersion(callback) {
 }
 
 function fillLanes() {
-    for (var i = 1; i <= 10; ++i) {
-        lanes.push(i);
+    for (var j = 0; j < maxShots[seriesNum]; ++j) {
+        for (var i = 1; i <= 10; ++i) {
+            lanes.push(i);
+        }
     }
 }
 
@@ -252,9 +288,12 @@ function pickLane() {
         fillLanes();
     }
 
+    /*
     var idx = Math.floor(Math.random()*lanes.length);
 
     return lanes.splice(idx, 1);
+    */
+    return lanes.splice(0, 1);
 }
 
 // --- Utilities ---
